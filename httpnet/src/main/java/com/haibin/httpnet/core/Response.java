@@ -75,7 +75,7 @@ public class Response {
         return mBody;
     }
 
-    /**
+    /**getContentLength
      * 返回数据流
      *
      * @return 获取流用于文件处理

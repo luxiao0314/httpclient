@@ -51,7 +51,7 @@ public class HttpConnection extends Connection {
         mHttpUrlConnection = (HttpURLConnection) connection;
         mHttpUrlConnection.setRequestMethod(method);
         mHttpUrlConnection.setUseCaches(true);
-        mHttpUrlConnection.setConnectTimeout(mRequest.timeout());
+        mHttpUrlConnection.setConnectTimeout(mClient.timeout());
         mHttpUrlConnection.setChunkedStreamingMode(1024);
         mHttpUrlConnection.setRequestProperty("Accept-Language", "zh-CN");
         mHttpUrlConnection.setRequestProperty("Charset", mRequest.encode());

@@ -21,21 +21,29 @@ import com.haibin.httpnet.core.Response;
 import com.haibin.httpnet.core.connection.Connection;
 import com.haibin.httpnet.core.connection.HttpConnection;
 import com.haibin.httpnet.core.connection.HttpsConnection;
+import com.haibin.httpnet.core.interceptor.CallServerInterceptor;
+import com.haibin.httpnet.core.interceptor.ConnectInterceptor;
+import com.haibin.httpnet.core.interceptor.Interceptor;
+import com.haibin.httpnet.core.interceptor.RealInterceptorChain;
+import com.haibin.httpnet.core.interceptor.RetryAndFollowUpInterceptor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 请求的封装执行
  */
-
 public class AsyncCall implements Runnable {
     private Callback mCallBack;
     private Request mRequest;
     private Connection mConnection;
+    private HttpNetClient mClient;
 
     AsyncCall(HttpNetClient client, Request request, Callback callBack, InterceptListener listener) {
         this.mCallBack = callBack;
         this.mRequest = request;
+        this.mClient = client;
         mConnection = request.url().startsWith("https") ?
                 new HttpsConnection(client, request, listener) :
                 new HttpConnection(client, request, listener);
@@ -47,7 +55,23 @@ public class AsyncCall implements Runnable {
     }
 
     public Response execute() throws IOException {
-        return mConnection.connect();
+        return getResponseWithInterceptorChain();
+//        return mConnection.connect();
+    }
+
+    private Response getResponseWithInterceptorChain() {
+        List<Interceptor> interceptors = new ArrayList<>();
+        interceptors.addAll(this.mClient.interceptors());
+        interceptors.add(new RetryAndFollowUpInterceptor(this.mClient));
+        interceptors.add(new ConnectInterceptor(this.mClient));
+        interceptors.add(new CallServerInterceptor());
+        Interceptor.Chain chain = new RealInterceptorChain(interceptors,mConnection,0,mRequest);
+        try {
+            return chain.proceed(this.mRequest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Request getRequest() {

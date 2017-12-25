@@ -30,7 +30,6 @@ public final class Request {
     private RequestParams mParams;
     private Headers mHeaders;
     private String mEncode;
-    private int mTimeout;
     private HttpContent mHttpContent;
     private String mHost;
     private int mPort;
@@ -42,7 +41,6 @@ public final class Request {
         this.mParams = builder.mParams;
         this.mHttpContent = builder.mHttpContent;
         this.mEncode = builder.mEncode;
-        this.mTimeout = builder.mTimeout;
         this.mHost = builder.mHost;
         this.mPort = builder.mPort;
     }
@@ -71,10 +69,6 @@ public final class Request {
         return mEncode;
     }
 
-    public int timeout() {
-        return mTimeout;
-    }
-
     public String host() {
         return mHost;
     }
@@ -87,7 +81,6 @@ public final class Request {
         private String mUrl;
         private String mMethod;
         private String mEncode;
-        private int mTimeout;
         private RequestParams mParams;
         private Headers.Builder mHeaders;
         private HttpContent mHttpContent;
@@ -97,7 +90,6 @@ public final class Request {
         public Builder() {
             this.mMethod = "GET";
             this.mEncode = "UTF-8";
-            this.mTimeout = 13000;
             this.mHeaders = new Headers.Builder();
         }
 
@@ -110,12 +102,6 @@ public final class Request {
         public Builder encode(String encode) {
             if (encode == null) throw new NullPointerException("encode can not be null");
             this.mEncode = encode;
-            return this;
-        }
-
-        public Builder timeout(int timeout) {
-            this.mTimeout = timeout;
-            if (mTimeout <= 0) mTimeout = 13000;
             return this;
         }
 

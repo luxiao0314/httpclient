@@ -53,7 +53,7 @@ public class HttpsConnection extends Connection {
         mHttpsUrlConnection.setSSLSocketFactory(mClient.getSslSocketFactory());
         mHttpsUrlConnection.setRequestMethod(method);
         mHttpsUrlConnection.setUseCaches(true);
-        mHttpsUrlConnection.setConnectTimeout(mRequest.timeout());
+        mHttpsUrlConnection.setConnectTimeout(mClient.timeout());
         mHttpsUrlConnection.setRequestProperty("Accept-Language", "zh-CN");
         mHttpsUrlConnection.setRequestProperty("Charset", mRequest.encode());
         mHttpsUrlConnection.setRequestProperty("Connection", "Keep-Alive");
