@@ -47,7 +47,7 @@ public final class RealInterceptorChain implements Interceptor.Chain {
                 throw new IllegalStateException("network interceptor " + this.interceptors.get(this.index - 1) + " must call proceed() exactly once");
             } else {
                 RealInterceptorChain next = new RealInterceptorChain(this.interceptors, connection, this.index + 1, request);
-                Interceptor interceptor = (Interceptor) this.interceptors.get(this.index);
+                Interceptor interceptor = this.interceptors.get(this.index);
                 Response response = interceptor.intercept(next);
                 if (this.index + 1 < this.interceptors.size() && next.calls != 1) {
                     throw new IllegalStateException("network interceptor " + interceptor + " must call proceed() exactly once");

@@ -15,7 +15,8 @@
  */
 package com.haibin.httpnet.core;
 
-import com.haibin.httpnet.core.call.AsyncCall;
+
+import com.haibin.httpnet.core.call.RealCall;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
@@ -38,7 +39,7 @@ public final class Dispatcher {
      *
      * @param call 请求
      */
-    public void execute(AsyncCall call) {
+    public void execute(RealCall.AsyncCall call) {
         this.mExecutorService.execute(call);
     }
 }

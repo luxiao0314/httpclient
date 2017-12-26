@@ -17,7 +17,7 @@ public final class CallServerInterceptor implements Interceptor {
     }
 
     public Response intercept(Chain chain) throws IOException {
-        Connection connection = ((RealInterceptorChain) chain).connection();
+        Connection connection = chain.connection();
         Response response = connection.connect();
         int code = response.getCode();
         if ((code == 204 || code == 205) && response.getContentLength() > 0L) {

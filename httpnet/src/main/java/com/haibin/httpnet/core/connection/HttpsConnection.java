@@ -115,7 +115,7 @@ public class HttpsConnection extends Connection {
     }
 
     @Override
-    void finish() {
+    public void finish() {
         IO.close(mOutputStream, mInputStream);
     }
 }

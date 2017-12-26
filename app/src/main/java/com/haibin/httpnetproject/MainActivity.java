@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         iv = (ImageView) findViewById(R.id.iv);
         text = (TextView) findViewById(R.id.text);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        AppContext.getRefWatcher().watch(this);
+//        AppContext.getRefWatcher().watch(this);
     }
 
     public void onClick(View v) {
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 .headers(headers)
                 .build();
         callDownload = client.newCall(request);
-        callDownload.execute(new Callback() {
+        callDownload.enqueue(new Callback() {
             @Override
             public void onResponse(Response response) {
                 try {
@@ -228,7 +228,6 @@ public class MainActivity extends AppCompatActivity {
                         .build()
                         .newCall(request)
                         .execute();
-                Log.e("onComplete", " onComplete " + response.getBody());
                 e.onComplete();
             }
         }).subscribeOn(Schedulers.newThread())
@@ -271,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
                 .headers(header)
                 .build();
         client.newCall(request)
-                .execute(new Callback() {
+                .enqueue(new Callback() {
                     @Override
                     public void onResponse(Response response) {
                         Log.e("onResponse", response.getBody());
@@ -305,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 })
-                .execute(new Callback() {
+                .enqueue(new Callback() {
                     @Override
                     public void onResponse(Response response) {
                         Log.e("res", response.getBody());
@@ -330,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
                 .method("GET")
                 .build();
         client.newCall(request)
-                .execute(new Callback() {
+                .enqueue(new Callback() {
                     @Override
                     public void onResponse(Response response) {
                         Log.e("res", response.getBody());

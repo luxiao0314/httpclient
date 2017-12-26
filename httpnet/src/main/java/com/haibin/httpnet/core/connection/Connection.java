@@ -51,6 +51,10 @@ public abstract class Connection {
         this.mRequest = request;
     }
 
+    /**
+     * 异步执行
+     * @param callBack
+     */
     public void connect(Callback callBack) {
         try {
             doInit();
@@ -63,6 +67,11 @@ public abstract class Connection {
         }
     }
 
+    /**
+     * 同步执行
+     * @return
+     * @throws IOException
+     */
     public Response connect() throws IOException {
         doInit();
         return getResponse();
@@ -119,7 +128,7 @@ public abstract class Connection {
 
     public abstract void disconnect();
 
-    abstract void finish();
+    public abstract void finish();
 
     /**
      * 初始化头部

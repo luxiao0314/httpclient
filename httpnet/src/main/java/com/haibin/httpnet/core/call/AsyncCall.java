@@ -59,19 +59,14 @@ public class AsyncCall implements Runnable {
 //        return mConnection.connect();
     }
 
-    private Response getResponseWithInterceptorChain() {
+    private Response getResponseWithInterceptorChain() throws IOException {
         List<Interceptor> interceptors = new ArrayList<>();
         interceptors.addAll(this.mClient.interceptors());
         interceptors.add(new RetryAndFollowUpInterceptor(this.mClient));
         interceptors.add(new ConnectInterceptor(this.mClient));
         interceptors.add(new CallServerInterceptor());
-        Interceptor.Chain chain = new RealInterceptorChain(interceptors,mConnection,0,mRequest);
-        try {
-            return chain.proceed(this.mRequest);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        Interceptor.Chain chain = new RealInterceptorChain(interceptors, mConnection, 0, mRequest);
+        return chain.proceed(this.mRequest);
     }
 
     public Request getRequest() {

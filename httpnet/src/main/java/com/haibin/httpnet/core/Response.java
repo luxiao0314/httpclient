@@ -41,15 +41,7 @@ public class Response {
         this.mHeaders = headers;
         this.mEncode = encode;
         this.mContentLength = contentLength;
-    }
-
-    /**
-     * 返回状态码
-     *
-     * @return http  code
-     */
-    public int getCode() {
-        return mCode;
+        this.setBody();
     }
 
     /**
@@ -57,7 +49,7 @@ public class Response {
      *
      * @return 转为字符串
      */
-    public String getBody() {
+    private void setBody() {
         if (mBody == null) {
             try {
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -72,6 +64,23 @@ public class Response {
                 close();
             }
         }
+    }
+
+    /**
+     * 返回状态码
+     *
+     * @return http  code
+     */
+    public int getCode() {
+        return mCode;
+    }
+
+    /**
+     * 获取返回body
+     *
+     * @return body
+     */
+    public String getBody() {
         return mBody;
     }
 

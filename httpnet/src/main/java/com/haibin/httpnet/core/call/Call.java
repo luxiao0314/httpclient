@@ -37,7 +37,7 @@ public interface Call {
      *
      * @param callBack 回调
      */
-    void execute(Callback callBack);
+    void enqueue(Callback callBack);
 
     /**
      * 同步执行一个请求，必须在子线程执行
