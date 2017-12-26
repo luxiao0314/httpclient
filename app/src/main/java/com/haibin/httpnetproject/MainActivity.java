@@ -269,11 +269,12 @@ public class MainActivity extends AppCompatActivity {
                 .method("POST")
                 .headers(header)
                 .build();
-        client.newCall(request)
+        client.newBuilder()
+                .addInterceptor(new LoggerInterceptor())
+                .build().newCall(request)
                 .enqueue(new Callback() {
                     @Override
                     public void onResponse(Response response) {
-                        Log.e("onResponse", response.getBody());
                     }
 
                     @Override
@@ -328,11 +329,12 @@ public class MainActivity extends AppCompatActivity {
                 .url("http://v2.api.dmzj.com/old/comment/0/0/33461/0.json")
                 .method("GET")
                 .build();
-        client.newCall(request)
+        client.newBuilder()
+                .addInterceptor(new LoggerInterceptor())
+                .build().newCall(request)
                 .enqueue(new Callback() {
                     @Override
                     public void onResponse(Response response) {
-                        Log.e("res", response.getBody());
                     }
 
                     @Override

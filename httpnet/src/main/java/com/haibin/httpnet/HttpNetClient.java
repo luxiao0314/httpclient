@@ -57,7 +57,7 @@ public final class HttpNetClient {
     }
 
     public HttpNetClient.Builder newBuilder() {
-        return new HttpNetClient.Builder(this);
+        return new Builder(this);
     }
 
     public Call newCall(Request request) {
@@ -114,6 +114,7 @@ public final class HttpNetClient {
 
         Builder(HttpNetClient okHttpClient) {
             this.dispatcher = okHttpClient.dispatcher;
+            this.sslManager = okHttpClient.sslManager;
             this.proxy = okHttpClient.proxy;
         }
 
