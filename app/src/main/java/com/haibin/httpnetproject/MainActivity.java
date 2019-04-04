@@ -15,16 +15,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.haibin.httpnet.HttpNetClient;
-import com.haibin.httpnet.builder.Headers;
-import com.haibin.httpnet.builder.Request;
-import com.haibin.httpnet.builder.RequestParams;
-import com.haibin.httpnet.core.Response;
-import com.haibin.httpnet.core.call.Call;
-import com.haibin.httpnet.core.call.Callback;
-import com.haibin.httpnet.core.call.InterceptListener;
-import com.haibin.httpnet.core.interceptor.LoggerInterceptor;
-import com.haibin.httpnet.core.io.JsonContent;
+import com.haibin.http.HttpNetClient;
+import com.haibin.http.builder.Headers;
+import com.haibin.http.builder.Request;
+import com.haibin.http.builder.RequestParams;
+import com.haibin.http.core.Response;
+import com.haibin.http.core.call.Call;
+import com.haibin.http.core.call.Callback;
+import com.haibin.http.core.call.InterceptListener;
+import com.haibin.http.core.interceptor.LoggerInterceptor;
+import com.haibin.http.core.io.JsonContent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -49,8 +49,10 @@ public class MainActivity extends AppCompatActivity {
     private Call callExe;
 
     private Call callDownload;
-
     HttpNetClient client = new HttpNetClient();
+    {
+        client.newBuilder().addInterceptor(new LoggerInterceptor()).build();
+    }
 
     public static void show(Activity activity) {
         Intent intent = new Intent(activity, MainActivity.class);
@@ -106,10 +108,8 @@ public class MainActivity extends AppCompatActivity {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(final ObservableEmitter<String> e) throws Exception {
-                client.newBuilder()
-                        .addInterceptor(new LoggerInterceptor())
-                        .build()
-                        .newCall(new Request.Builder()
+
+                        client.newCall(new Request.Builder()
                                 .url("http://f1.market.xiaomi.com/download/AppStore/0117653278abecee8762883a940e129e9d242ae7d/com.huanghaibin_dev.cnblogs.apk")
                                 .headers(new Headers.Builder().addHeader("Range", "bytes=" + readySize + "-"))
                                 .build())
@@ -238,10 +238,7 @@ public class MainActivity extends AppCompatActivity {
                         .method("GET")
                         .build();
                 try {
-                    client.newBuilder()
-                            .addInterceptor(new LoggerInterceptor())
-                            .build()
-                            .newCall(request)
+                    client.newCall(request)
                             .execute();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -263,9 +260,7 @@ public class MainActivity extends AppCompatActivity {
                 .method("POST")
                 .headers(header)
                 .build();
-        client.newBuilder()
-                .addInterceptor(new LoggerInterceptor())
-                .build().newCall(request)
+        client.newCall(request)
                 .enqueue(new Callback() {
                     @Override
                     public void onResponse(Response response) {
@@ -322,9 +317,7 @@ public class MainActivity extends AppCompatActivity {
                 .url("http://v2.api.dmzj.com/old/comment/0/0/33461/0.json")
                 .method("GET")
                 .build();
-        client.newBuilder()
-                .addInterceptor(new LoggerInterceptor())
-                .build().newCall(request)
+        client.newCall(request)
                 .enqueue(new Callback() {
                     @Override
                     public void onResponse(Response response) {

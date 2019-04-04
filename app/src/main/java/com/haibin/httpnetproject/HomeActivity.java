@@ -49,7 +49,9 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
-        MainActivity.show(this);
+//        MainActivity.show(this);
+        TestActivity.show(this);
+
 //        try {
 //            httpNet();
 //        } catch (IOException e) {

@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.haibin.httpnetproject.MainActivity"/>
+        <activity android:name=".TestActivity"/>
     </application>
 
 </manifest>
