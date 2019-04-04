@@ -1,0 +1,13 @@
+.gradle/
+.idea/
+build/
+advlib/advlib.iml
+*.iml
+local.properties
+app/app.iml
+adv.iml
+AISDK_ASSET.txt
+aisdk*.jar
+gradle/aisdk*
+.DS_Store
+pkgs/
