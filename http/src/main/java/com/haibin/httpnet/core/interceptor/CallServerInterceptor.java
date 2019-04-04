@@ -13,9 +13,6 @@ import java.net.ProtocolException;
 
 public final class CallServerInterceptor implements Interceptor {
 
-    public CallServerInterceptor(){
-    }
-
     public Response intercept(Chain chain) throws IOException {
         Connection connection = chain.connection();
         Response response = connection.connect();

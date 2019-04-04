@@ -28,6 +28,7 @@ import com.haibin.httpnet.core.io.JsonContent;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 
@@ -38,7 +39,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 rxExecute();
                 break;
             case R.id.btn_execute1:
-                rxGetHttp();
+                httpGetCommon();
                 break;
             case R.id.btn_execute11:
                 httpGet();
@@ -98,10 +98,6 @@ public class MainActivity extends AppCompatActivity {
                 rxRangeDownload();
                 break;
         }
-    }
-
-    private void rxGetHttp() {
-
     }
 
     /**
@@ -345,26 +341,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void httpGetCommon() {
-        Observable.create(new ObservableOnSubscribe<Response>() {
-            @Override
-            public void subscribe(ObservableEmitter<Response> e) throws Exception {
-                e.onNext(client.newCall("http://img.pconline.com.cn/images/upload/upc/tx/wallpaper/1306/27/c4/22626360_1372304637240_800x800.jpg").execute());
-            }
-        }).subscribeOn(Schedulers.io())
-                .map(new Function<Response, Bitmap>() {
-                    @Override
-                    public Bitmap apply(Response response) throws Exception {
-                        return BitmapFactory.decodeStream(response.toStream());
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Bitmap>() {
-                    @Override
-                    public void accept(Bitmap bitmap) throws Exception {
-                        iv.setImageBitmap(bitmap);
-                    }
-                });
-
+        try {
+            Response response = client.newCall("http://img.pconline.com.cn/images/upload/upc/tx/wallpaper/1306/27/c4/22626360_1372304637240_800x800.jpg").execute();
+            Bitmap bitmap = BitmapFactory.decodeStream(response.toStream());
+            iv.setImageBitmap(bitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

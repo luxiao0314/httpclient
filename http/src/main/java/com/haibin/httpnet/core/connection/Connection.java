@@ -22,7 +22,6 @@ import com.haibin.httpnet.builder.Headers;
 import com.haibin.httpnet.builder.Request;
 import com.haibin.httpnet.builder.RequestParams;
 import com.haibin.httpnet.core.Response;
-import com.haibin.httpnet.core.call.Callback;
 import com.haibin.httpnet.core.io.HttpContent;
 
 import java.io.DataOutputStream;
@@ -51,27 +50,6 @@ public abstract class Connection {
         this.mRequest = request;
     }
 
-    /**
-     * 异步执行
-     * @param callBack
-     */
-    public void connect(Callback callBack) {
-        try {
-            doInit();
-            onResponse(callBack);
-        } catch (IOException e) {
-            e.printStackTrace();
-            callBack.onFailure(e);
-        } finally {
-            finish();
-        }
-    }
-
-    /**
-     * 同步执行
-     * @return
-     * @throws IOException
-     */
     public Response connect() throws IOException {
         doInit();
         return getResponse();
@@ -121,8 +99,6 @@ public abstract class Connection {
     abstract void delete() throws IOException;
 
     abstract void patch() throws IOException;
-
-    abstract void onResponse(Callback callBack) throws IOException;
 
     abstract Response getResponse() throws IOException;
 

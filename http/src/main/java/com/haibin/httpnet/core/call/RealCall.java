@@ -40,6 +40,7 @@ public class RealCall implements Call {
     private AsyncCall mAsyncCall;
     private Connection mConnection;
     private InterceptListener mListener;
+    private boolean executed;
 
     public RealCall(HttpNetClient client, Request request) {
         this.mClient = client;
@@ -73,6 +74,11 @@ public class RealCall implements Call {
      */
     @Override
     public Response execute() throws IOException {
+        //第一步：判断同一Http是否请求过
+        synchronized (this) {
+            if (executed) throw new IllegalStateException("Already Executed");
+            executed = true;
+        }
         try {
             Response result = getResponseWithInterceptorChain();
             if (result == null) throw new IOException("Canceled");
@@ -137,8 +143,7 @@ public class RealCall implements Call {
     }
 
     private Response getResponseWithInterceptorChain() throws IOException {
-        List<Interceptor> interceptors = new ArrayList<>();
-        interceptors.addAll(this.mClient.interceptors());
+        List<Interceptor> interceptors = new ArrayList<>(this.mClient.interceptors());
         interceptors.add(new RetryAndFollowUpInterceptor(this.mClient));
         interceptors.add(new ConnectInterceptor(this.mClient));
         interceptors.add(new CallServerInterceptor());
