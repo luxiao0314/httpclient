@@ -92,7 +92,7 @@ public class RealCall implements Call {
 
     @Override
     public void cancel() {
-        mAsyncCall.getConnection().disconnect();
+        mConnection.disconnect();
     }
 
     @Override
@@ -127,10 +127,6 @@ public class RealCall implements Call {
 
         public Request getRequest() {
             return mRequest;
-        }
-
-        Connection getConnection() {
-            return mConnection;
         }
 
         @Override

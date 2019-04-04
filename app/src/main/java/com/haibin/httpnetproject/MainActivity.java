@@ -64,13 +64,12 @@ public class MainActivity extends AppCompatActivity {
         iv = (ImageView) findViewById(R.id.iv);
         text = (TextView) findViewById(R.id.text);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-//        AppContext.getRefWatcher().watch(this);
     }
 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_execute:
-                rxExecute();
+                upload();
                 break;
             case R.id.btn_execute1:
                 httpGetCommon();
@@ -80,9 +79,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.btn_execute111:
                 httpPostJson();
-//                rxExecute();
-//                //httpGet();
-//                rxGetHttp();
                 break;
             case R.id.btn_cancel:
                 if (callExe != null) {
@@ -95,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.btn_download:
                 //rxDownload();
                 //rangeDownload();
-                rxRangeDownload();
+                rangeDownload();
                 break;
         }
     }
@@ -106,36 +102,59 @@ public class MainActivity extends AppCompatActivity {
     private void rxRangeDownload() {
         final File rangeFile = new File(Environment.getExternalStorageDirectory().getPath() + "/cnblogs.apk");
         final long readySize = rangeFile.exists() ? rangeFile.length() : 0;
-        Headers.Builder headers = new Headers.Builder()
-                .addHeader("Range", "bytes=" + readySize + "-");
-        Request request = new Request.Builder()
-                .url("http://f1.market.xiaomi.com/download/AppStore/0117653278abecee8762883a940e129e9d242ae7d/com.huanghaibin_dev.cnblogs.apk")
-                .headers(headers)
-                .build();
-        callDownload = client.newCall(request);
+
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
-            public void subscribe(ObservableEmitter<String> e) throws Exception {
-                try {
-                    Response response = callDownload.execute();
-                    InputStream is = response.toStream();
-                    RandomAccessFile randomAccessFile = new RandomAccessFile(rangeFile, "rw");
-                    randomAccessFile.seek(readySize);
-                    int length = response.getContentLength();
-                    length += readySize;
-                    int p = (int) readySize;
-                    int bytes;
-                    byte[] buffer = new byte[1024];
-                    while ((bytes = is.read(buffer)) != -1) {
-                        randomAccessFile.write(buffer, 0, bytes);
-                        p += bytes;
-                        e.onNext(String.valueOf((p / (float) length) * 100));
-                    }
-                    response.close();
-                } catch (Exception error) {
-                    error.printStackTrace();
-                    e.onError(error);
-                }
+            public void subscribe(final ObservableEmitter<String> e) throws Exception {
+                client.newBuilder()
+                        .addInterceptor(new LoggerInterceptor())
+                        .build()
+                        .newCall(new Request.Builder()
+                                .url("http://f1.market.xiaomi.com/download/AppStore/0117653278abecee8762883a940e129e9d242ae7d/com.huanghaibin_dev.cnblogs.apk")
+                                .headers(new Headers.Builder().addHeader("Range", "bytes=" + readySize + "-"))
+                                .build())
+                        .intercept(new InterceptListener() {
+                            @Override
+                            public void onProgress(final int index, final long currentLength, final long totalLength) {
+                                Log.e("当前进度", "  --  " + ((float) currentLength / totalLength) * 100);
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        text.setText("第 " + (index + 1) + " 个文件上传进度" + ((float) currentLength / totalLength) * 100);
+                                    }
+                                });
+                            }
+                        })
+                        .enqueue(new Callback() {
+                            @Override
+                            public void onResponse(Response response) {
+                                try {
+                                    InputStream is = response.toStream();
+                                    RandomAccessFile randomAccessFile = new RandomAccessFile(rangeFile, "rw");
+                                    randomAccessFile.seek(readySize);
+                                    int length = response.getContentLength();
+                                    length += readySize;
+                                    int p = (int) readySize;
+                                    int bytes;
+                                    byte[] buffer = new byte[1024];
+                                    while ((bytes = is.read(buffer)) != -1) {
+                                        randomAccessFile.write(buffer, 0, bytes);
+                                        p += bytes;
+                                        e.onNext(String.valueOf((p / (float) length) * 100));
+                                    }
+                                    response.close();
+                                } catch (Exception error) {
+                                    error.printStackTrace();
+                                    e.onError(error);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Log.e("onFailure", e.getMessage());
+                            }
+                        });
+
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -211,45 +230,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void rxExecute() {
-        final Request request = new Request.Builder()
-                .url("http://v2.api.dmzj.com/old/comment/0/0/33461/0.json")
-                .method("GET")
-                .build();
-        Observable.create(new ObservableOnSubscribe<String>() {
+        new Thread(new Runnable() {
             @Override
-            public void subscribe(final ObservableEmitter<String> e) throws Exception {
-                Response response = client
-                        .newBuilder()
-                        .addInterceptor(new LoggerInterceptor())
-                        .build()
-                        .newCall(request)
-                        .execute();
-                e.onComplete();
+            public void run() {
+                Request request = new Request.Builder()
+                        .url("http://v2.api.dmzj.com/old/comment/0/0/33461/0.json")
+                        .method("GET")
+                        .build();
+                try {
+                    client.newBuilder()
+                            .addInterceptor(new LoggerInterceptor())
+                            .build()
+                            .newCall(request)
+                            .execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.e("onSubscribe", "onSubscribe");
-                    }
-
-                    @Override
-                    public void onNext(String value) {
-                        Log.e("is", value);
-                        text.setText(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("网络错误", "网络错误");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.e("onComplete", "onComplete");
-                    }
-                });
+        });
     }
 
     public void httpPostJson() {
@@ -284,8 +282,7 @@ public class MainActivity extends AppCompatActivity {
         Request request = new Request.Builder()
                 .url("http://upload.cnblogs.com/ImageUploader/TemporaryAvatarUpload")
                 .method("POST")
-                .params(new RequestParams()
-                        .putFile("qqfile", "/storage/emulated/0/DCIM/Camera/IMG_20160909_080844.jpg"))
+                .params(new RequestParams().putFile("qqfile", "/storage/emulated/0/DCIM/Camera/IMG_20160909_080844.jpg"))
                 .headers(new Headers.Builder().addHeader("Cookie", "pgv_pvi=9544373248; .CNBlogsCookie=CA5152A644BF0710FB4CFFE2D1634FEE921CB1201E01962ACCEAEE2417BC6AE649E30F5C6DD63FC40ED6B064E4709B1656F8273AE2050DE1FAC47CE884FDFE6D430BAA80271DF15ADAD159FCDF0F37C7AC3B987FFA9ED210939E0650C08D42F84C0FC029; _ga=GA1.2.2128538109.1473746167; _gat=1"))
                 .build();
         client.newCall(request)
