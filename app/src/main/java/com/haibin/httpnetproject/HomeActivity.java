@@ -37,11 +37,12 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
-        try {
-            httpNet();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        MainActivity.show(this);
+//        try {
+////            httpNet();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void httpNet() throws IOException {
@@ -50,7 +51,7 @@ public class HomeActivity extends AppCompatActivity {
                 .build();
         Response response = new OkHttpClient
                 .Builder()
-                .addInterceptor(null)
+//                .addInterceptor(null)
                 .build()
                 .newCall(request)
                 .execute();

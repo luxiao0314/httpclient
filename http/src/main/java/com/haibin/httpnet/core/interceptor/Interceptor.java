@@ -15,7 +15,7 @@ public interface Interceptor {
 
     Response intercept(Interceptor.Chain chain) throws IOException;
 
-    public interface Chain {
+    interface Chain {
 
         Request request();
 
